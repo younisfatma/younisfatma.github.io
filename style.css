@@ -1,0 +1,79 @@
+.container{
+    background-color: rgb(2, 42, 57);
+}
+
+h1 {   
+    font-family: serif;
+    font-size: 1.7em;
+    text-align:center;
+    padding: 10px;
+    font-size: 3em;
+    padding-top: 40px;
+    font-style: italic;
+    font-weight: bolder;
+    color: rgb(61, 225, 250);
+}
+#text{
+    font-family:'Ibarra Real Nova', serif;
+    font-size: 1.5em;
+    padding: 10px;
+    line-height: 170%;
+    padding-left: 40px;
+    padding-right: 40px;
+    font-family: 'EB Garamond', serif;
+}
+p{
+   color: rgb(195, 232, 244); 
+   font-family: serif;
+}
+html,
+body,
+header,
+#intro-section {
+    height: 100%;    
+}
+
+@media (max-width: 740px) {
+    html,
+    body,
+    header,
+    #intro-section {
+    height: 100vh;
+    }
+}
+P{ 
+    padding-right: 30px;
+    padding-left: 30px;
+}
+.intro-2 {
+    background: url("backgroundimage.jpg")no-repeat center center;
+    background-size: cover;
+}
+.view {
+    margin-top: -56px;
+}
+.navbar {
+    z-index: 1;
+}
+html,
+body,
+header,
+.view {
+    height: 100%;
+}
+.hangingindent {
+    padding-left: 22px ;
+    text-indent: -22px ;
+  }
+
+.indent{
+    text-indent: 50px;
+}
+
+#navbar{
+    font-weight: bold;
+    font-family: 'EB Garamond', serif;
+}
+#mainnav{
+    font-family: 'Indie Flower', cursive;
+}
