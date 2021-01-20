@@ -1,7 +1,7 @@
 // Bouncung balls
 // Array demo
 
-let theBouncingBalls =[];
+let theBouncingBalls = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -22,7 +22,6 @@ function mousePressed(){
     dy: random(5,.5),
     theColor: color(random(255), random(255), random(255), random(255)),
  };
-
  theBouncingBalls.push(ball);
 }
 
