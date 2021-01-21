@@ -14,24 +14,24 @@ let ball = [{
 }];
 
 function setup() {
- createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
- background(220);
- moveBall();
- displayBall();
+  background(220);
+  moveBall();
+  displayBall();
 }
 
 function moveBall(){
- if (ball.x + ball.diameter >= width || ball.x - ball.diameter/3 <=0){
- ball.dx *=-1;
- }
- if (ball.y + ball.diameter >= height || ball.y - ball.diameter/3 <=0){
-   ball.dy *=-1;
-   }
+  if (ball.x + ball.diameter >= width || ball.x - ball.diameter/3 <=0){
+    ball.dx *=-1;
+  }
+  if (ball.y + ball.diameter >= height || ball.y - ball.diameter/3 <=0){
+    ball.dy *=-1;
+  }
 }
 
 function displayBall(){
- elipse(ball.x, ball.y, ball.diameter, ball.diameter)
+  ellipse(ball.x, ball.y, ball.diameter, ball.diameter);
 }

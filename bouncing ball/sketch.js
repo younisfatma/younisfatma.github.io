@@ -18,11 +18,11 @@ function mousePressed(){
     x: mouseX,
     y: mouseY,
     diameter: random(25, 100),
-    dx: random(5,.5),
-    dy: random(5,.5),
+    dx: random(5,5),
+    dy: random(5,5),
     theColor: color(random(255), random(255), random(255), random(255)),
- };
- theBouncingBalls.push(ball);
+  };
+  theBouncingBalls.push(ball);
 }
 
 function moveBall(){
@@ -31,7 +31,7 @@ function moveBall(){
     ball.y+= ball.dy;
 
     if (ball.x + ball.diameter >= width || ball.x - ball.diameter/3 <=0){
-    ball.dx *=-1;
+      ball.dx *=-1;
     }
     if (ball.y + ball.diameter >= height || ball.y - ball.diameter/3 <=0){
       ball.dy *=-1;
