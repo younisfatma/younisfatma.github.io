@@ -24,7 +24,6 @@ function draw() {
 }
 
 function mousePressed(){
-clickSound.play();
 
   let x = Math.floor(mouseX/cellWidth);
   let y = Math.floor(mouseY/cellHeight);
@@ -34,7 +33,7 @@ clickSound.play();
   toggleCells(x,y+1); //south
   toggleCells(x+1,y); //east
   toggleCells(x-1,y); //west
-
+  console.log(x,y);
 }
 
 function toggleCells(x,y){
