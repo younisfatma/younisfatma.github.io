@@ -35,7 +35,9 @@ let timeLastAddeddFood = 0;
 let millisSinceGameStarted;
 
 //obstacle variables
-let grid = createGrid(4,4); // make the grid the size an length of the obsitcle
+const ROWS = 20;
+const COLS = 20;
+let grid = createGrid(ROWS,COLS); // make the grid the size an length of the obsitcle
 let rows, cols, cellWidth, cellHeight;
 let obstacle = {x: 100, y: 100}; //assign it a grid, basically assigned it the first grid
 
