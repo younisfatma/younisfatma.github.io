@@ -17,13 +17,13 @@ let start = {x: 0, y: 0, isAlive: true,};
 let x;
 let y;
 let foods;
-let player = {radius: 15, speed: 5, color: "white"}
+let player = {radius: 15, speed: 5, color: "white"};
 let byeFood = false;
 let grow = false;
 let win = true;
 
 // used to switch colors
-let color = ["white", "black", "blue", "pink", "yellow", "red", ];
+let colorOptions = ["white", "black", "blue", "pink", "yellow", "red", ];
 let colorSlide = 0;
 
 // used to tell the time since the game started
@@ -40,15 +40,21 @@ const COLS = 20;
 let grid = createGrid(ROWS,COLS); // make the grid the size an length of the obsitcle
 let rows, cols, cellWidth, cellHeight;
 let obstacle = {x: 100, y: 100}; //assign it a grid, basically assigned it the first grid
+let obX = 0;
+let obY = 0;
 
+//previous location of obstacle
+let prevobX = 0;
+let prevobY = 0;
+let state = "right";
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   x = width / 2;
   y = height / 2;
-  
-  foods = [{x: random(0, width), y: random(0, width), radius: 10,},];
 
+  // creates the first food
+  foods = [{x: random(0, width), y: random(0, width), radius: 10,},];
 
   //obstacle grid 
   rows = grid.length;
@@ -69,8 +75,8 @@ function draw() {
   // if mouse is pressed win becomes false and the game is started
   if (win === false) {
     gridBackGround();
-    checkByeFood();
     obstacles();
+    checkByeFood();
     createBall();
     move();
     stopBall();
@@ -125,54 +131,18 @@ function time(){
       minutes +=1;
     }
   }
-    fill("black");
-    text("Time  "+ minutes + ":"+ seconds, 80, 30); 
+  fill("black");
+  text("Time  "+ minutes + ":"+ seconds, 80, 30); 
 }
 
 // Checks if the food is eaten
 function checkByeFood() {
   if (byeFood === false) {
-      createFood();
-    }
-    byeFood = eatFood(byeFood);
-}
-
-
-//green obstacle
-function obstacles(){
-  createObstacle();
-  moveObstacle();
-  if (x <= obstacle.x + player.radius && x >= obstacle.x - player.radius && y <= obstacle.y + player.radius && y >= obstacle.y - player.radius){
-    console.log("hit green rect")
+    createFood();
   }
+  byeFood = eatFood(byeFood);
 }
 
-function createObstacle(){
-  noStroke();
-  fill("lime");
-  rect(obstacle.x, obstacle.y, 20, [20])
-}
-
-// function moveObstacle(){
-//   for (let y = 0; y < rows; y++){
-//     for (let x = 0; x < cols; x++){
-//       if (x = obstacle.x, y = obstacle.y){
-
-//       }
-//     }
-//   }
-// }
-
-function createGrid(cols, rows){
-  let grid = [];
-  for (let y = 0; y < rows; y++){
-    grid.push([])
-    for (let x = 0; x < cols; x++){
-      grid[y].push(0);
-    }
-  }
-  return grid;
-}
 
 // creates the game ball
 function createStartBall(){
@@ -188,7 +158,7 @@ function mousePressed() {
     win = false;
   }
   //controlling the ball color
-  player.color = (color[0+colorSlide]);
+  player.color = colorOptions[0+colorSlide];
   if (colorSlide < 5){
     colorSlide+=1;
   }
@@ -278,15 +248,97 @@ function eatFood(byeFood) {
   return false;
 }
 
+//green obstacle
+function obstacles(){
+  createObstacle();
+  if (frameCount% 20 === 0){
+    moveObstacle();
+  }
+}
+
+//creates the obstacle
+function createObstacle(){
+  noStroke();
+  fill("lime");
+  grid[prevobY][prevobX] = 0;
+  grid[obY][obX] = 1;
+}
+
+//moves the obstacle
+function moveObstacle(){
+  prevobX = obX;
+  prevobY = obY;
+
+  if (obY !== rows && obX !== cols){
+    if (state=== "right" ) {
+      obX += 1;
+    }
+    else if (state === "down"){
+      obY += 1;
+    }
+    else if (state === "left"){
+      obX -= 1;
+    }
+    else if (state ==="up"){
+      obY -= 1;
+    }
+  }
+  determineState();
+}
+
+//determines what direction to travel
+function determineState(){
+  if (state === "right" && obY === 0 && obX === cols-1){ 
+    state = "down";
+  }
+  else if (state === "down" && obY === rows-1 && obX === cols-1){
+    state = "left";
+  }
+  else if (state === "left" && obY === rows-1 && obX === 0){
+    state = "up";
+  }
+  else if (state === "up" && obY === 0 && obX === 0){
+    state = "right";
+  }
+}
+
+//create's grid for the obstacle
+function createGrid(cols, rows){
+  let grid = [];
+  for (let y = 0; y < rows; y++){
+    grid.push([]);
+    for (let x = 0; x < cols; x++){
+      grid[y].push(0);
+    }
+  }
+  return grid;
+}
+
+//display's grid for the obstacle
+function displayGrid(){
+  for (let y = 0; y < rows; y++){
+    for (let x = 0; x < cols; x++){
+      if (grid[y][x] === 0){
+        fill("cyan");
+      }
+      if (grid[y][x] === 1){
+        fill("pink");
+      }
+      noStroke();
+      rect(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
+    }
+  }
+}
+
 // if the player has grown more than width/6 the player wins the game
 function won() {
   if (player.radius > width / 6) {
-  win = true;
-  background(255);
-  fill("black");
-  textSize(26);
-  textAlign(CENTER);
-  textStyle(BOLD);
-  text("YOU WON", width / 2, height / 2);
+    win = true;
+    background(255);
+    fill("black");
+    textSize(26);
+    textAlign(CENTER);
+    textStyle(BOLD);
+    text("YOU WON", width / 2, height / 2);
   }
 }

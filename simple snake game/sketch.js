@@ -1,48 +1,60 @@
-//obstacle variables
+
 const ROWS = 20;
 const COLS = 20;
-let grid = createGrid(ROWS,COLS); // make the grid the size an length of the obsitcle
+let grid = createGrid(ROWS,COLS);
 let rows, cols, cellWidth, cellHeight;
-let obstacle = {x: 100, y: 100}; //assign it a grid, basically assigned it the first grid
+let obstacle = {x: 100, y: 100}; 
 let obX = 0;
 let obY = 0;
 
-//previous location of obstacle
+//previous location of snake
 let prevobX = 0;
 let prevobY = 0;
 let state = "right";
 let speed = 1;
 
-//setting up the images
-let snakeImg, wallImg, grassImg;
+let playerImg, wallImg, grassImg. bgImg;
 
 function preload(){
-  snakeImg = loadImage("assets/yellow-ghost.png");
+  // playerImg = loadImage("assets/yellow-ghost.png");
+  bgImg = loadImage ("assets/bg.jpg");
+  playerImg = loadImage ("assets/snake2.png");
   wallImg = loadImage ("assets/wall.png");
   grassImg = loadImage ("assets/grass.png");
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  //obstacle grid 
+  createCanvas(400, 400);
   rows = grid.length;
   cols = grid[0].length;
   cellWidth = width/cols;
   cellHeight = height/rows;
 }
 
-
-
 function draw() {
-  background(220);
+  background(bgImg)
   displayGrid();
   obstacles();
-
+  direction();
 }
 
+function direction() {
+  if (keyIsDown(65)) { //a
+    state= "left";
+  }
 
+  if (keyIsDown(68)) { ///d
+    state = "right";
+  }
 
-//green obstacle
+  if (keyIsDown(87)) { //w
+    state= "up";
+  }
+  if (keyIsDown(83)) { //s
+    state = "down";
+  }
+}
+
 function obstacles(){
   if (frameCount% 20 === 0){
     createObstacle();
@@ -50,20 +62,18 @@ function obstacles(){
   }
 }
 
-//creates the obstacle
 function createObstacle(){
   noStroke();
-  fill("lime");
   grid[prevobY][prevobX] = 0;
   grid[obY][obX] = 1;
 }
 
-//moves the obstacle
+
 function moveObstacle(){
   prevobX = obX;
   prevobY = obY;
 
-  if (obY !== rows && obX !== cols){
+  if (obY <= rows-1 && obX <= cols-1 && obY >= 0 && obX >= 0 ){
     if (state=== "right" ) {
       obX += 1;
     }
@@ -82,7 +92,7 @@ function moveObstacle(){
 
 }
 
-//determines what direction to travel
+//determines the direction it should travel
 function determineState(){
   if (state === "right" && obY === 0 && obX === cols-1){ 
     state = "down";
@@ -115,13 +125,11 @@ function displayGrid(){
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
       if (grid[y][x] === 0){
-        fill("cyan");
+        image(grassImg, x*cellWidth, y*cellHeight, cellWidth, cellHeight);
       }
       if (grid[y][x] === 1){
-        fill("pink");
+        image(playerImg, x*cellWidth, y*cellHeight, cellWidth, cellHeight);
       }
-      noStroke();
-      rect(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
     }
   }
 }
