@@ -262,6 +262,7 @@ function createObstacle(){
   fill("lime");
   grid[prevobY][prevobX] = 0;
   grid[obY][obX] = 1;
+  displayGrid();
 }
 
 //moves the obstacle

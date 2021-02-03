@@ -13,7 +13,7 @@ let prevobY = 0;
 let state = "right";
 let speed = 1;
 
-let playerImg, wallImg, grassImg. bgImg;
+let playerImg, wallImg, grassImg, bgImg;
 
 function preload(){
   // playerImg = loadImage("assets/yellow-ghost.png");
@@ -32,7 +32,7 @@ function setup() {
 }
 
 function draw() {
-  background(bgImg)
+  background(bgImg);
   displayGrid();
   obstacles();
   direction();
