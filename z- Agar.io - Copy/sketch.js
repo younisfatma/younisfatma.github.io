@@ -17,6 +17,8 @@ let player = {x:0 , y:0, radius: 15, speed: 5, color: "white"};
 let byeFood = false;
 let grow = false;
 let win = true;
+let begin = true;
+let end = false;
 
 // used to switch colors
 let colorOptions = ["linen", "lightgrey", "aqua", "pink", "yellow", "DarkOrchid", ];
@@ -82,8 +84,10 @@ function draw() {
     move();
     stopBall();
     time();
-    won();
+    displayWonScreen();
   }
+  //end screen
+  displayLostScreen();
 }
 
 // Start screen
@@ -164,7 +168,8 @@ function mousePressed() {
 function createBall() {
   noStroke();
   fill(player.color);
-  circle(player.x, player.y, player.radius * 2);
+  ellipse(player.x, player.y, player.radius * 2, player.radius * 2);
+  ellipseMode(CENTER);
 }
 
 // moves the ball
@@ -244,8 +249,10 @@ function eatFood(byeFood) {
 //green obstacle
 function obstacles(){
   createObstacle();
+  checkCollision();
   if (frameCount% 20 === 0){
     moveObstacle();
+    determineState();
   }
 }
 
@@ -258,9 +265,10 @@ function createObstacle(){
 
 //moves the obstacle
 function moveObstacle(){
+  //used to return the current block back to transparent
   prevobX = obX;
   prevobY = obY;
-
+  //moves the rectangle
   if (obY !== rows && obX !== cols){
     if (state=== "right" ) {
       obX += 1;
@@ -275,7 +283,7 @@ function moveObstacle(){
       obY -= 1;
     }
   }
-  determineState();
+  //determines whether is should change direction
 }
 
 //determines what direction to travel
@@ -310,26 +318,26 @@ function createGrid(cols, rows){
 function displayGrid(){
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
-      // if (grid[y][x] === 0){
-      //   fill(color(255, 255, 255, 0));
-      // }
-      rectx = x*cellWidth;
-      recty = y*cellHeight;
       if (grid[y][x] === 1){
         fill("lime");
         noStroke();
         rect(rectx, recty, cellWidth, cellHeight);
-
-        //collision
-        hit = collideRectCircle(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius);
-        if (hit) {
-          // reduceRadiusOfBall();
-          //ends the game
-          win = true;
-        }
-      }
-      
+        rectx = x*cellWidth;
+        recty = y*cellHeight;
+      } 
     }
+  }
+}
+
+//collision
+//once the ball gets to a certain size this doesnt work
+function checkCollision(){
+  hit = collideRectCircle(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius);
+  console.log(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius, hit);
+  if (hit) {
+    //ends the game
+    win = true;
+    end = true;
   }
 }
 
@@ -337,21 +345,30 @@ function reduceRadiusOfBall(){
   if (frameCount% 10 === 0){
     if (player.radius > cellWidth || player.radius > cellHeight){
       player.radius -=5;
-      console.log(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius,"ouch");
     }
-    
   }
 }
 
 // if the player has grown more than width/6 the player wins the game
-function won() {
+function displayWonScreen() {
   if (player.radius > width / 6) {
     win = true;
     background(255);
-    fill("black");
+    fill("green");
     textSize(26);
     textAlign(CENTER);
     textStyle(BOLD);
     text("YOU WON", width / 2, height / 2);
+  }
+}
+
+function displayLostScreen(){
+  if (end){
+    background(255);
+    fill("red");
+    textSize(26);
+    textAlign(CENTER);
+    textStyle(BOLD);
+    text("YOU LOST", width / 2, height / 2);
   }
 }
