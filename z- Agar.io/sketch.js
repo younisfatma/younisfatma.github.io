@@ -4,7 +4,6 @@
 // Grid assignment
 
 // Extra for experts:
-// screen resize
 // obstical collision
 // character skins (images)
 // automatically moving object in grid
@@ -59,7 +58,6 @@ let imagenumber = 0;
 
 // Sounds
 let bgSound, lossSound, victorySound;
-let soundStoped = false;
 let millisSinceLossSoundPlayed = 0;
 
 // Font
@@ -370,7 +368,7 @@ function displayGrid(){
   }
 }
 
-// Collision
+// Collision (this doesnt work once the player gets to a certain size)
 function checkCollision(){
   hit = collideRectCircle(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius);
   if (hit) {
