@@ -4,12 +4,17 @@
 // Grid assignment
 
 // Extra for experts:
-// more colors
+// screen resize
+// obstical collision
+// character skins (images)
+// automatically moving object in grid
+// sounds
+// fonts
 
-// array for start screen
+// Array for start screen
 let start = {x: 0, y: 0, isAlive: true,};
 
-// variables for the game
+// Variables for the game
 let x;
 let y;
 let foods;
@@ -20,11 +25,8 @@ let win = true;
 let begin = true;
 let end = false;
 
-// used to switch colors
-let colorOptions = ["linen", "lightgrey", "aqua", "pink", "yellow", "DarkOrchid", ];
-let colorSlide = 0;
 
-// used to tell the time since the game started
+// Used to tell the time since the game started
 let seconds = 0;
 let minutes= 0;
 let lastSecond = 0;
@@ -32,62 +34,85 @@ let lastAddedFood = 0;
 let timeLastAddeddFood = 0;
 let millisSinceGameStarted;
 
-//obstacle variables
+// Obstacle variables
 const ROWS = 15;
 const COLS = 15;
-let grid = createGrid(ROWS,COLS); // make the grid the size an length of the obsitcle
+let grid = createGrid(ROWS,COLS); 
 let rows, cols, cellWidth, cellHeight;
-let obstacle = {x: 100, y: 100}; //assign it a grid, basically assigned it the first grid
+let obstacle = {x: 100, y: 100}; 
 let obX = 0;
 let obY = 0;
 
-//previous location of obstacle
+// Previous location of obstacle
 let prevobX = 0;
 let prevobY = 0;
 let state = "right";
 
-//rectangle collision
-let rectx;
-let recty;
+// Rectangle collision
+let rectx, recty;
 let hit = false;
 
-//images
-let evilImg, hamsterImg, whaleImg, zombieImg, skeletonImg;
-let maskImage;
+// Images
+let bgImg, evilImg, hamsterImg, whaleImg, zombieImg, skeletonImg;
+let images = [];
+let imagenumber = 0;
+
+// Sounds
+let bgSound, lossSound, victorySound;
+let soundStoped = false;
+let millisSinceLossSoundPlayed = 0;
+
+// Font
+let font;
 
 function preload(){
-  evilImg = loadImage ("assets/evil.jpg");
-  hamsterImg = loadImage ("assets/hamster.jpg");
-  zombieImg = loadImage ("assets/zombie.jpg");
-  whaleImg = loadImage ("assets/whale.jpg");
-  skeletonImg = loadImage ("assets/skeleton.jpg");
+  // Images
+  bgImg = loadImage("assets/bg.png");
+  evilImg = loadImage ("assets/evil.png");
+  hamsterImg = loadImage ("assets/hamster.png");
+  zombieImg = loadImage ("assets/zombie.png");
+  whaleImg = loadImage ("assets/whale.png");
+  skeletonImg = loadImage ("assets/skeleton.png");
+  images.push(evilImg, hamsterImg, zombieImg, whaleImg, skeletonImg);
+
+  // Sounds
+  bgSound = loadSound("assets/backgroundMusic.mp3");
+  lossSound = loadSound("assets/loss.mp3");
+  victorySound = loadSound("assets/Victory.mp3");
+
+  // Font
+  font = loadFont("assets/ARCADECLASSIC.TTF");
 }
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   player.x = width / 2;
   player.y = height / 2;
 
-  // creates the first food
+  // Creates the first food
   foods = [{x: random(0, width), y: random(0, width), radius: 10,},];
 
-  //obstacle grid 
+  // Obstacle grid 
   rows = grid.length;
   cols = grid[0].length;
   cellWidth = width/cols;
   cellHeight = height/rows;
+
+  // Play sound
+  bgSound.play();
 }
 
-// when the window is resized the canvas is also resized
+// When the window is resized the canvas is also resized
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-  // start screen
+  // Start screen
   displayStart();
   
-  // if mouse is pressed win becomes false and the game is started
+  // If mouse is pressed win becomes false and the game is started
   if (win === false) {
     gridBackGround();
     obstacles();
@@ -98,18 +123,18 @@ function draw() {
     time();
     displayWonScreen();
   }
-  //end screen
+  // End screen
   displayLostScreen();
 }
 
 // Start screen
 function displayStart() { 
   if (start.isAlive) {
-    fill("white");
-    rect(0, 0, width, height);
+    image(bgImg, 0,0, width, height);
 
-    fill("black");
-    textSize(26);
+    fill("white");
+    textFont(font);
+    textSize(40);
     textAlign(CENTER);
     textStyle(BOLD);
     text("CLICK TO START", width / 2, height / 2);
@@ -118,21 +143,21 @@ function displayStart() {
     fill(50);
     textStyle(NORMAL);
     text("EAT AS MUCH FOOD AS YOU CAN TO WIN! IF YOU COLLIDE WITH GREEN OBSTICAL YOU LOSE!", width/2, height*11/16);
-    text("Right Click to Change your Color", width/2, height*3/4);
+    text("Right Click to Change your Character", width/2, height*3/4);
     text("Use WASD to Control", width/2, height*13/16);
     
-    //time value
+    // Time value
     millisSinceGameStarted = millis();
   }
 }
  
 // Creates the background
 function gridBackGround(){
-  background(255);
+  background(0);
   for (let x = 0; x < width; x += 25) {
     for (let y = 0; y < height; y += 25) {
       noStroke();
-      fill(200);
+      fill(40);
       circle(x, y, 10);
     }
   }
@@ -148,8 +173,24 @@ function time(){
       minutes +=1;
     }
   }
-  fill("black");
+  fill("white");
   text("Time  "+ minutes + ":"+ seconds, 80, 30); 
+}
+
+// Starts the game and controls color of the ball
+function mousePressed() {
+  if (start.isAlive === true) {
+    start.isAlive = false;
+    win = false;
+  }
+
+  // Controls what skin to display
+  if (imagenumber < 4){
+    imagenumber+=1;
+  }
+  else{
+    imagenumber=0;
+  }
 }
 
 // Checks if the food is eaten
@@ -160,31 +201,19 @@ function checkByeFood() {
   byeFood = eatFood(byeFood);
 }
 
-// starts the game and controls color of the ball
-function mousePressed() {
-  if (start.isAlive === true) {
-    start.isAlive = false;
-    win = false;
-  }
-  //controlling the ball color
-  player.color = colorOptions[0+colorSlide];
-  if (colorSlide < 5){
-    colorSlide+=1;
-  }
-  else{
-    colorSlide=0;
-  }
-}
-
-// creates the player balll
+// Creates the player balll
 function createBall() {
   noStroke();
-  fill(player.color);
+  fill(color(255,255,255,0));
   ellipse(player.x, player.y, player.radius * 2, player.radius * 2);
   ellipseMode(CENTER);
+
+  // Character skins
+  imageMode(CENTER);
+  image(images[imagenumber], player.x, player.y, player.radius*2, player.radius*2 );
 }
 
-// moves the ball
+// Moves the ball
 function move() {
   if (keyIsDown(65)) { //a
     player.x -= player.speed;
@@ -202,7 +231,7 @@ function move() {
   }
 }
 
-// stops the ball from flying off the window
+// Stops the ball from flying off the window
 function stopBall() {
   if (player.x - player.radius < 0) {
     player.x = player.radius;
@@ -218,7 +247,7 @@ function stopBall() {
   }
 }
 
-// makes the ball grow bigger
+// Makes the ball grow bigger
 function ballWidth() {
   player.radius += 3;
   if (player.speed > 1 && player.speed > 1) {
@@ -226,7 +255,7 @@ function ballWidth() {
   }
 }
 
-// creates the food for the player to eat
+// Creates the food for the player to eat
 function createFood() { 
   for (let food of foods){
     noStroke();
@@ -241,7 +270,7 @@ function createFood() {
   }
 }
 
-// determines when the player has touched the food, calls the food to grow, and chooses a new location for the food
+// Determines when the player has touched the food, calls the food to grow, and chooses a new location for the food
 function eatFood(byeFood) {
   for (let food of foods){
     if (player.x <= food.x + player.radius && player.x >= food.x - player.radius && player.y <= food.y + player.radius && player.y >= food.y - player.radius) {
@@ -258,7 +287,7 @@ function eatFood(byeFood) {
   return false;
 }
 
-//green obstacle
+// Green obstacle
 function obstacles(){
   createObstacle();
   checkCollision();
@@ -268,19 +297,20 @@ function obstacles(){
   }
 }
 
-//creates the obstacle
+// Creates the obstacle
 function createObstacle(){
   grid[prevobY][prevobX] = 0;
   grid[obY][obX] = 1;
   displayGrid();
 }
 
-//moves the obstacle
+// Moves the obstacle
 function moveObstacle(){
-  //used to return the current block back to transparent
+  // Used to return the current block back to transparent
   prevobX = obX;
   prevobY = obY;
-  //moves the rectangle
+
+  // Moves the obstacle
   if (obY !== rows && obX !== cols){
     if (state=== "right" ) {
       obX += 1;
@@ -295,10 +325,9 @@ function moveObstacle(){
       obY -= 1;
     }
   }
-  //determines whether is should change direction
 }
 
-//determines what direction to travel
+// Determines what direction to travel
 function determineState(){
   if (state === "right" && obY === 0 && obX === cols-1){ 
     state = "down";
@@ -314,7 +343,7 @@ function determineState(){
   }
 }
 
-//create's grid for the obstacle
+// Create's grid for the obstacle
 function createGrid(cols, rows){
   let grid = [];
   for (let y = 0; y < rows; y++){
@@ -326,59 +355,64 @@ function createGrid(cols, rows){
   return grid;
 }
 
-//display's grid for the obstacle
+// Display's grid for the obstacle
 function displayGrid(){
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
       if (grid[y][x] === 1){
+        rectx = x*cellWidth;
+        recty = y*cellHeight;
         fill("lime");
         noStroke();
         rect(rectx, recty, cellWidth, cellHeight);
-        rectx = x*cellWidth;
-        recty = y*cellHeight;
       } 
     }
   }
 }
 
-//collision
-//once the ball gets to a certain size this doesnt work
+// Collision
 function checkCollision(){
   hit = collideRectCircle(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius);
-  console.log(rectx, recty, cellWidth, cellHeight, player.x, player.y, player.radius, hit);
   if (hit) {
-    //ends the game
+    // Ends the game
     win = true;
     end = true;
+    millisSinceLossSoundPlayed = millis();
   }
 }
 
-function reduceRadiusOfBall(){
-  if (frameCount% 10 === 0){
-    if (player.radius > cellWidth || player.radius > cellHeight){
-      player.radius -=5;
-    }
-  }
-}
-
-// if the player has grown more than width/6 the player wins the game
+// If the player has grown more than width/6 the player wins the game
 function displayWonScreen() {
   if (player.radius > width / 6) {
+    // Victory sound 
+    bgSound.pause();
+    victorySound.play();
+
     win = true;
-    background(255);
+    background(0);
     fill("green");
-    textSize(26);
+    textSize(50);
     textAlign(CENTER);
     textStyle(BOLD);
     text("YOU WON", width / 2, height / 2);
   }
 }
 
+// If player hits green obstacal they lose
 function displayLostScreen(){
   if (end){
-    background(255);
+    // Plays loss sound for 3 seconds
+    bgSound.pause();
+    if (millis() - millisSinceLossSoundPlayed < 3000){
+      lossSound.play();
+    }
+    else{
+      lossSound.stop();
+    }
+
+    background(0);
     fill("red");
-    textSize(26);
+    textSize(40);
     textAlign(CENTER);
     textStyle(BOLD);
     text("YOU LOST", width / 2, height / 2);
